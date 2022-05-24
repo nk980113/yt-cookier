@@ -1,7 +1,8 @@
+// @ts-check
 const puppeteer = require("puppeteer-extra");
 const fs = require("fs");
 
-module.exports = async function login({ email, pass }) {
+module.exports = async function login({ email, pass }, { debug, error }) {
   const StealthPlugin = require("puppeteer-extra-plugin-stealth");
   puppeteer.use(StealthPlugin());
 
@@ -27,8 +28,10 @@ module.exports = async function login({ email, pass }) {
     // Find email box
     const select = await page.waitForSelector("input[type=\"email\"]");
 
-    if(!select)
-      throw new Error("Email box not found!");
+    if (!select) {
+      error("Email box not found!");
+      return;
+    }
 
     // Fill in the email address
     await select.click();
@@ -57,19 +60,23 @@ module.exports = async function login({ email, pass }) {
     });
 
     const uri = page.url();
-    if (uri.includes("accounts.google.com/signin") && !uri.includes("admin.google.com/a/cpanel"))
-      throw new Error("Your password is wrong or 2FA on this account is enabled! Please check and try again.");
+    if (uri.includes("accounts.google.com/signin") && !uri.includes("admin.google.com/a/cpanel")) {
+      error("Your password is wrong or 2FA on this account is enabled! Please check and try again.");
+      return;
+    }
 
-    if (uri.includes("admin.google.com/a/cpanel") && !uri.includes("accounts.google.com/signin"))
-      throw new Error("This account have no right to access youtube.com! Please try another account!");
+    if (uri.includes("admin.google.com/a/cpanel")) {
+      error("This account have no right to access youtube.com! Please try another account!");
+      return;
+    }
 
     if (uri.startsWith("https://www.youtube.com/")) {
-      console.log("Successfully logged in!\nSuccessfully verified your account!");
+      debug("Successfully logged in!\nSuccessfully verified your account!");
       const cookies = await page.cookies();
       fs.writeFileSync("./node_modules/ytcf/LoginCookies.json", JSON.stringify(cookies, null, 4));
     } else {
       process.emitWarning("An unexpected error occurred!\nPleace check the popped out window to check whats wrong and post an issue to:\nhttps://github.com/ItzMiracleOwO/yt-cookier/issues");
-      throw new Error("Closing the browser with the status FAILED");
+      error("Closing the browser with the status FAILED");
     }
 
   } finally {

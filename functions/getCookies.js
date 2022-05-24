@@ -1,9 +1,10 @@
+// @ts-check
 const puppeteer = require("puppeteer-extra");
 const fs = require("fs");
 
-module.exports = async function getCookie(url) {
+module.exports = async function getCookie(url, { debug, error }) {
 
-  console.log("Attempting to get cookies");
+  debug("Attempting to get cookies");
 
   const StealthPlugin = require("puppeteer-extra-plugin-stealth");
   puppeteer.use(StealthPlugin());
@@ -45,7 +46,7 @@ module.exports = async function getCookie(url) {
     return Rcookies;
 
   } catch (e) {
-    throw new Error(e);
+    error(e);
   } finally {
     // await browser.close();
   }

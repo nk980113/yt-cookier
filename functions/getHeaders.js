@@ -1,9 +1,10 @@
+// @ts-check
 const puppeteer = require("puppeteer-extra");
 
 const fs = require("fs");
 
-module.exports = function getHeaders(url) {
-  console.log("Attempting to get headers");
+module.exports = function getHeaders(url, { debug, error }) {
+  debug("Attempting to get headers");
   const StealthPlugin = require("puppeteer-extra-plugin-stealth");
   let returnValue = null;
 
@@ -47,7 +48,7 @@ module.exports = function getHeaders(url) {
         // await browser.close();
       });
     } catch (e) {
-      throw new Error(e);
+      error(e);
     } finally {
       // await browser.close();
     }
