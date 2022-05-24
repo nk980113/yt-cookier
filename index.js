@@ -1,15 +1,6 @@
-const {
-  login
-} = require("ytcf/functions/login");
-const {
-  getCookie
-} = require("ytcf/functions/getCookies");
-const {
-  getHeaders
-} = require("ytcf/functions/getHeaders");
-
+// @ts-check
 module.exports = {
-  login,
-  getCookie,
-  getHeaders,
+  login: require('./functions/login'),
+  getCookie: require('./functions/getCookies'),
+  getHeaders: require('./functions/getHeaders'),
 };

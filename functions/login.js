@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer-extra");
 const fs = require("fs");
 
-async function login({ email, pass }) {
+module.exports = async function login({ email, pass }) {
   const StealthPlugin = require("puppeteer-extra-plugin-stealth");
   puppeteer.use(StealthPlugin());
 
@@ -76,5 +76,3 @@ async function login({ email, pass }) {
     await browser.close();
   }
 }
-
-module.exports = { login };
