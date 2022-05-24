@@ -1,8 +1,9 @@
 // @ts-check
 const puppeteer = require("puppeteer-extra");
+const dataRef = require("../dataRef");
 const fs = require("fs");
 
-module.exports = async function getCookie(url, { debug, error }) {
+module.exports = async function getCookie(url, { debug, error, loginCookies }) {
 
   debug("Attempting to get cookies");
 
@@ -17,8 +18,11 @@ module.exports = async function getCookie(url, { debug, error }) {
   const navigationPromise = page.waitForNavigation();
 
   try {
-    const cookiesString = await fs.readFileSync("./node_modules/ytcf/LoginCookies.json");
-    const cookies = JSON.parse(cookiesString);
+    const cookies = dataRef.loginCookies ?? loginCookies;
+    if (!cookies) {
+      error("Login cookies not found! Please use login() to fetch login cookies or pass cookies as a parameter.");
+      return;
+    }
     await page.setCookie(...cookies);
 
     // Opening YouTube.com
@@ -28,16 +32,12 @@ module.exports = async function getCookie(url, { debug, error }) {
     const PageCookies = await page.cookies();
     const cookieStr = JSON.stringify(PageCookies, null, 4);
 
-    fs.writeFileSync("./node_modules/ytcf/LoginCookies.json", JSON.stringify(PageCookies, null, 2)), //Update Login
-    function (err) {
-      if (err) throw err;
-    };
+    dataRef.loginCookies = PageCookies; // Update login
 
     await browser.close();
 
     // const cookieString = fs.readFileSync("./node_modules/ytcf/cookies.json");
-    const array = JSON.parse(cookieStr);
-    const Rcookies = array.map(({
+    const Rcookies = PageCookies.map(({
       name,
       value
     }) =>

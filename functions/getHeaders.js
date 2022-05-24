@@ -1,16 +1,15 @@
 // @ts-check
 const puppeteer = require("puppeteer-extra");
+const dataRef = require("../dataRef");
 
-const fs = require("fs");
-
-module.exports = function getHeaders(url, { debug, error }) {
+module.exports = function getHeaders(url, { debug, error, loginCookies }) {
   debug("Attempting to get headers");
   const StealthPlugin = require("puppeteer-extra-plugin-stealth");
   let returnValue = null;
 
   puppeteer.use(StealthPlugin());
 
-  return new Promise(async (resolve) => {
+  return new Promise(async (resolve, reject) => {
     const browser = await puppeteer.launch({
       headless: false,
       timeout: 0
@@ -20,8 +19,11 @@ module.exports = function getHeaders(url, { debug, error }) {
     const navigationPromise = page.waitForNavigation();
 
     try {
-      const cookiesString = fs.readFileSync("./node_modules/ytcf/LoginCookies.json");
-      const cookies = JSON.parse(cookiesString);
+      const cookies = dataRef.loginCookies ?? loginCookies;
+      if (!cookies) {
+        reject("Login cookies not found! Please use login() to fetch login cookies or pass cookies as a parameter.");
+        return; // Promise that the Promise won't run more
+      }
       await page.setCookie(...cookies);
 
       // Opening YouTube.com
@@ -32,16 +34,8 @@ module.exports = function getHeaders(url, { debug, error }) {
         // console.log(requestHeaders)
         const headers = JSON.stringify(requestHeaders);
         if (headers.includes("x-youtube-identity-token")) {
-          returnValue = requestHeaders;
-          fs.writeFileSync("./node_modules/ytcf/headers.json", JSON.stringify(requestHeaders, null, 4)),
-          function (err, res) {
-            if (err) throw err;
-          };
-          const LoginCookies = await page.cookies();
-          fs.writeFileSync("./node_modules/ytcf/LoginCookies.json", JSON.stringify(LoginCookies, null, 2)), //Update Login
-          function (err) {
-            if (err) throw err;
-          };
+          dataRef.headers = returnValue = requestHeaders;
+          dataRef.loginCookies = await page.cookies(); // Update login
           await browser.close();
           resolve(returnValue);
         }

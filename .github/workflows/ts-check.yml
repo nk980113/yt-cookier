@@ -1,0 +1,26 @@
+name: Check-TS
+on: [push]
+permissions: write-all
+
+jobs:
+  check-ts:
+    name: Check TS Type Datas
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+
+      - name: Install Node.js dependencies
+        run: npm ci
+
+      - name: Install TypeScript compiler
+        run: npm install -g typescript
+
+      - name: Check TypeScript Type Datas
+        run: tsc --noEmit

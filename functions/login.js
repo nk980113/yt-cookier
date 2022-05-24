@@ -1,6 +1,6 @@
 // @ts-check
 const puppeteer = require("puppeteer-extra");
-const fs = require("fs");
+const dataRef = require('../dataRef');
 
 module.exports = async function login({ email, pass }, { debug, error }) {
   const StealthPlugin = require("puppeteer-extra-plugin-stealth");
@@ -73,7 +73,7 @@ module.exports = async function login({ email, pass }, { debug, error }) {
     if (uri.startsWith("https://www.youtube.com/")) {
       debug("Successfully logged in!\nSuccessfully verified your account!");
       const cookies = await page.cookies();
-      fs.writeFileSync("./node_modules/ytcf/LoginCookies.json", JSON.stringify(cookies, null, 4));
+      dataRef.loginCookies = cookies;
     } else {
       process.emitWarning("An unexpected error occurred!\nPleace check the popped out window to check whats wrong and post an issue to:\nhttps://github.com/ItzMiracleOwO/yt-cookier/issues");
       error("Closing the browser with the status FAILED");
