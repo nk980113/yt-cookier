@@ -1,6 +1,6 @@
 // @ts-check
 const puppeteer = require("puppeteer-extra");
-const dataRef = require('../dataRef');
+const dataRef = require("../dataRef");
 
 module.exports = async function login({ email, pass }, { debug, error }) {
   const StealthPlugin = require("puppeteer-extra-plugin-stealth");
