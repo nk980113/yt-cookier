@@ -1,6 +1,6 @@
 // @ts-check
 module.exports = {
-  login: require('./functions/login'),
-  getCookie: require('./functions/getCookies'),
-  getHeaders: require('./functions/getHeaders'),
+  login: require("./functions/login"),
+  getCookie: require("./functions/getCookies"),
+  getHeaders: require("./functions/getHeaders"),
 };

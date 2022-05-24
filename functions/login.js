@@ -82,4 +82,4 @@ module.exports = async function login({ email, pass }, { debug, error }) {
   } finally {
     await browser.close();
   }
-}
+};
