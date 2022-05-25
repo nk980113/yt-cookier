@@ -1,8 +1,23 @@
 // @ts-check
 const puppeteer = require("puppeteer-extra");
 const dataRef = require("../dataRef");
+const { noop } = require("../utils");
 
-module.exports = async function login({ email, pass }, { debug, error }) {
+/** Authorization data when logging in.
+ * @typedef {object} Auth
+ * @property {string} email The email of the account.
+ * @property {string} pass The password of the account.
+ */
+
+/** Tries to login YouTube and fetch cookies.
+ * @param {Auth} auth Account data.
+ * @param {import("../utils").Callbacks} callbacks Optional callbacks for checking progress.
+ * @returns {Promise<void>}
+ */
+module.exports = async function login({ email, pass }, {
+  debug = noop,
+  error = noop,
+} = {}) {
   const StealthPlugin = require("puppeteer-extra-plugin-stealth");
   puppeteer.use(StealthPlugin());
 

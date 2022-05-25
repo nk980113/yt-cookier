@@ -1,4 +1,8 @@
 {
+  "exports": {
+    ".": "./index.js",
+    "./*": null
+  },
   "dependencies": {
     "puppeteer": "^14.1.1",
     "puppeteer-extra": "^3.2.3",

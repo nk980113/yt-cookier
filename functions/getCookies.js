@@ -1,7 +1,7 @@
 // @ts-check
+// TODO: You know
 const puppeteer = require("puppeteer-extra");
 const dataRef = require("../dataRef");
-const fs = require("fs");
 
 module.exports = async function getCookie(url, { debug, error, loginCookies }) {
 
@@ -18,7 +18,7 @@ module.exports = async function getCookie(url, { debug, error, loginCookies }) {
   const navigationPromise = page.waitForNavigation();
 
   try {
-    const cookies = dataRef.loginCookies ?? loginCookies;
+    const cookies = (dataRef.loginCookies.length && dataRef.loginCookies) ?? loginCookies;
     if (!cookies) {
       error("Login cookies not found! Please use login() to fetch login cookies or pass cookies as a parameter.");
       return;
@@ -46,7 +46,7 @@ module.exports = async function getCookie(url, { debug, error, loginCookies }) {
     return Rcookies;
 
   } catch (e) {
-    error(e);
+    error(e.message);
   } finally {
     // await browser.close();
   }

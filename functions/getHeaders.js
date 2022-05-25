@@ -1,8 +1,18 @@
 // @ts-check
 const puppeteer = require("puppeteer-extra");
 const dataRef = require("../dataRef");
+const { noop } = require("../utils");
 
-module.exports = function getHeaders(url, { debug, error, loginCookies }) {
+/** Gets request headers from a certain video.
+ * @param {string} url Video URL.
+ * @param {import("../utils").CallbacksAndCookies} callbacksAndCookies Optional callbacks for checking progress and default cookies.
+ * @returns {Promise<object>} The request headers.
+ */
+module.exports = function getHeaders(url, {
+  debug = noop,
+  error = noop,
+  loginCookies = [],
+} = {}) {
   debug("Attempting to get headers");
   const StealthPlugin = require("puppeteer-extra-plugin-stealth");
   let returnValue = null;
@@ -19,7 +29,7 @@ module.exports = function getHeaders(url, { debug, error, loginCookies }) {
     const navigationPromise = page.waitForNavigation();
 
     try {
-      const cookies = dataRef.loginCookies ?? loginCookies;
+      const cookies = (dataRef.loginCookies.length && dataRef.loginCookies) || loginCookies;
       if (!cookies) {
         reject("Login cookies not found! Please use login() to fetch login cookies or pass cookies as a parameter.");
         return; // Promise that the Promise won't run more
@@ -42,7 +52,7 @@ module.exports = function getHeaders(url, { debug, error, loginCookies }) {
         // await browser.close();
       });
     } catch (e) {
-      error(e);
+      error(e.message);
     } finally {
       // await browser.close();
     }
